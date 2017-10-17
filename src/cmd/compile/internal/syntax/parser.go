@@ -13,7 +13,7 @@ import (
 )
 
 const debug = false
-const trace = false
+const trace = true
 
 type parser struct {
 	base  *src.PosBase
@@ -105,33 +105,6 @@ func (p *parser) want(tok token) {
 func (p *parser) trySkipNewline() {
 	if p.tok == _Semi && p.lit == "newline" {
 		p.next()
-	}
-}
-
-func (p *parser) trySkipNewlineIfNextIs(next token) {
-	if p.tok == _Semi && p.lit == "newline" {
-		saved := *p
-		p.next()
-		if p.tok != next {
-			// restore
-			p.nlsemi = saved.nlsemi
-			p.line = saved.line
-			p.col = saved.col
-			p.tok = saved.tok
-			p.lit = saved.lit
-			p.kind = saved.kind
-			p.op = saved.op
-			p.prec = saved.prec
-			p.offs = saved.offs
-			p.r0 = saved.r0
-			p.r = saved.r
-			p.w = saved.w
-			p.line0 = saved.line0
-			p.line = saved.line
-			p.col0 = saved.col0
-			p.col = saved.col
-			p.suf = saved.suf
-		}
 	}
 }
 
@@ -577,7 +550,7 @@ func (p *parser) funcDeclOrNil() *FuncDecl {
 	f.Name = p.name()
 	f.Type = p.funcType()
 
-	p.trySkipNewlineIfNextIs(_Lbrace)
+	p.trySkipNewline()
 
 	if p.tok == _Lbrace {
 		f.Body = p.funcBody()
@@ -812,6 +785,9 @@ func (p *parser) operand(keep_parens bool) Expr {
 		pos := p.pos()
 		p.next()
 		t := p.funcType()
+
+		p.trySkipNewline()
+
 		if p.tok == _Lbrace {
 			p.xnest++
 
@@ -866,8 +842,6 @@ func (p *parser) pexpr(keep_parens bool) Expr {
 
 loop:
 	for {
-		p.trySkipNewlineIfNextIs(_Lbrace)
-
 		pos := p.pos()
 		switch p.tok {
 		case _Dot:
@@ -1804,14 +1778,13 @@ func (p *parser) header(keyword token) (init SimpleStmt, cond Expr, post SimpleS
 		}
 	}
 
+	p.trySkipNewline()
+
 	var condStmt SimpleStmt
 	var semi struct {
 		pos src.Pos
 		lit string // valid if pos.IsKnown()
 	}
-
-	p.trySkipNewline()
-
 	if p.tok == _Semi {
 		semi.pos = p.pos()
 		semi.lit = p.lit
@@ -1838,6 +1811,8 @@ func (p *parser) header(keyword token) (init SimpleStmt, cond Expr, post SimpleS
 		condStmt = init
 		init = nil
 	}
+
+	p.trySkipNewline()
 
 done:
 	// unpack condStmt
@@ -1871,7 +1846,7 @@ func (p *parser) ifStmt() *IfStmt {
 	s.Init, s.Cond, _ = p.header(_If)
 	s.Then = p.blockStmt("if clause")
 
-	p.trySkipNewlineIfNextIs(_Else)
+	p.trySkipNewline()
 
 	if p.got(_Else) {
 		switch p.tok {
@@ -2089,9 +2064,6 @@ func (p *parser) stmtOrNil() Stmt {
 		s := new(ReturnStmt)
 		s.pos = p.pos()
 		p.next()
-
-		p.trySkipNewlineIfNextIs(_Lbrace)
-
 		if p.tok != _Semi && p.tok != _Rbrace {
 			s.Results = p.exprList()
 		}
@@ -2123,10 +2095,15 @@ func (p *parser) stmtList() (l []Stmt) {
 		if p.tok == _Rparen || p.tok == _Rbrace {
 			continue
 		}
+
+		p.got(_Semi)
+
+		/*
 		if !p.got(_Semi) {
 			p.syntax_error("at end of statement")
 			p.advance(_Semi, _Rbrace)
 		}
+		*/
 	}
 	return
 }
