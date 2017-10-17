@@ -1696,6 +1696,9 @@ func (p *parser) blockStmt(context string) *BlockStmt {
 	}
 
 	s := new(BlockStmt)
+
+	p.trySkipNewline()
+
 	s.pos = p.pos()
 
 	if !p.got(_Lbrace) {
