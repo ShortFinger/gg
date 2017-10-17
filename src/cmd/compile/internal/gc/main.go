@@ -1003,7 +1003,7 @@ func importfile(f *Val) *types.Pkg {
 
 		q := fmt.Sprintf("%s %s %s %s", objabi.GOOS, objabi.GOARCH, objabi.Version, objabi.Expstring())
 		if p[10:] != q {
-			yyerror("import %s: object is [%s] expected [%s]", file, p[10:], q)
+			Warn("import %s: object is [%s] expected [%s]", file, p[10:], q)
 			errorexit()
 		}
 	}
