@@ -113,7 +113,24 @@ func (p *parser) trySkipNewlineIfNextIs(next token) {
 		saved := *p
 		p.next()
 		if p.tok != next {
-			*p = saved
+			// restore
+			p.nlsemi = saved.nlsemi
+			p.line = saved.line
+			p.col = saved.col
+			p.tok = saved.tok
+			p.lit = saved.lit
+			p.kind = saved.kind
+			p.op = saved.op
+			p.prec = saved.prec
+			p.offs = saved.offs
+			p.r0 = saved.r0
+			p.r = saved.r
+			p.w = saved.w
+			p.line0 = saved.line0
+			p.line = saved.line
+			p.col0 = saved.col0
+			p.col = saved.col
+			p.suf = saved.suf
 		}
 	}
 }
