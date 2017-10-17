@@ -385,12 +385,19 @@ func (p *parser) list(open, sep, close token, f func() bool) src.Pos {
 	for p.tok != _EOF && p.tok != close && !done {
 		done = f()
 		// sep is optional before close
-		if !p.got(sep) && p.tok != close {
-			p.syntax_error(fmt.Sprintf("expecting %s or %s", tokstring(sep), tokstring(close)))
-			p.advance(_Rparen, _Rbrack, _Rbrace)
+		if !p.got(sep) {
+
+			if close != _Semi {
+				p.trySkipNewline()
+			}
+
 			if p.tok != close {
-				// position could be better but we had an error so we don't care
-				return p.pos()
+				p.syntax_error(fmt.Sprintf("expecting %s or %s", tokstring(sep), tokstring(close)))
+				p.advance(_Rparen, _Rbrack, _Rbrace)
+				if p.tok != close {
+					// position could be better but we had an error so we don't care
+					return p.pos()
+				}
 			}
 		}
 	}
