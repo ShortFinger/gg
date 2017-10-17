@@ -108,6 +108,16 @@ func (p *parser) trySkipNewline() {
 	}
 }
 
+func (p *parser) trySkipNewlineIfNextIs(next token) {
+	if p.tok == _Semi && p.lit == "newline" {
+		saved := *p
+		p.next()
+		if p.tok != next {
+			*p = saved
+		}
+	}
+}
+
 // ----------------------------------------------------------------------------
 // Error handling
 
@@ -832,6 +842,8 @@ func (p *parser) pexpr(keep_parens bool) Expr {
 
 loop:
 	for {
+		p.trySkipNewlineIfNextIs(_Lbrace)
+
 		pos := p.pos()
 		switch p.tok {
 		case _Dot:
