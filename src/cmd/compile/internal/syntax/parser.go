@@ -13,7 +13,7 @@ import (
 )
 
 const debug = false
-const trace = true
+const trace = false
 
 type parser struct {
 	base  *src.PosBase
@@ -2073,7 +2073,7 @@ func (p *parser) stmtOrNil() Stmt {
 		s.pos = p.pos()
 		p.next()
 
-		p.trySkipNewline()
+		p.trySkipNewlineIfNextIs(_Lbrace)
 
 		if p.tok != _Semi && p.tok != _Rbrace {
 			s.Results = p.exprList()
