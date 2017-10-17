@@ -1854,7 +1854,7 @@ func (p *parser) ifStmt() *IfStmt {
 	s.Init, s.Cond, _ = p.header(_If)
 	s.Then = p.blockStmt("if clause")
 
-	p.trySkipNewline()
+	p.trySkipNewlineIfNextIs(_Else)
 
 	if p.got(_Else) {
 		switch p.tok {
