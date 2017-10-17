@@ -13,7 +13,7 @@ import (
 )
 
 const debug = false
-const trace = false
+const trace = true
 
 type parser struct {
 	base  *src.PosBase
@@ -99,6 +99,12 @@ func (p *parser) want(tok token) {
 	if !p.got(tok) {
 		p.syntax_error("expecting " + tokstring(tok))
 		p.advance()
+	}
+}
+
+func (p *parser) trySkipNewline() {
+	if p.tok == _Semi && p.lit == "newline" {
+		p.next()
 	}
 }
 
@@ -536,6 +542,9 @@ func (p *parser) funcDeclOrNil() *FuncDecl {
 
 	f.Name = p.name()
 	f.Type = p.funcType()
+
+	p.trySkipNewline()
+
 	if p.tok == _Lbrace {
 		f.Body = p.funcBody()
 	}
@@ -1762,6 +1771,9 @@ func (p *parser) header(keyword token) (init SimpleStmt, cond Expr, post SimpleS
 		pos src.Pos
 		lit string // valid if pos.IsKnown()
 	}
+
+	p.trySkipNewline()
+
 	if p.tok == _Semi {
 		semi.pos = p.pos()
 		semi.lit = p.lit
@@ -1820,6 +1832,8 @@ func (p *parser) ifStmt() *IfStmt {
 
 	s.Init, s.Cond, _ = p.header(_If)
 	s.Then = p.blockStmt("if clause")
+
+	p.trySkipNewline()
 
 	if p.got(_Else) {
 		switch p.tok {
@@ -2037,6 +2051,9 @@ func (p *parser) stmtOrNil() Stmt {
 		s := new(ReturnStmt)
 		s.pos = p.pos()
 		p.next()
+
+		p.trySkipNewline()
+
 		if p.tok != _Semi && p.tok != _Rbrace {
 			s.Results = p.exprList()
 		}
