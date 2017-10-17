@@ -560,7 +560,7 @@ func (p *parser) funcDeclOrNil() *FuncDecl {
 	f.Name = p.name()
 	f.Type = p.funcType()
 
-	p.trySkipNewline()
+	p.trySkipNewlineIfNextIs(_Lbrace)
 
 	if p.tok == _Lbrace {
 		f.Body = p.funcBody()
