@@ -13,7 +13,7 @@ import (
 )
 
 const debug = false
-const trace = true
+const trace = false
 
 type parser struct {
 	base  *src.PosBase
@@ -846,13 +846,7 @@ func (p *parser) pexpr(keep_parens bool) Expr {
 		defer p.trace("pexpr")()
 	}
 
-	savedTok := p.tok
-
 	x := p.operand(keep_parens)
-
-	if savedTok == _Name {
-		p.trySkipNewline()
-	}
 
 loop:
 	for {
