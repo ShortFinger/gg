@@ -1741,7 +1741,9 @@ func (p *parser) singleStmt() *BlockStmt {
 	s := new(BlockStmt)
 	s.pos = p.pos()
 
-	s.List = p.stmtList()
+	stm := p.stmtOrNil()
+	s.List = append(s.List, stm)
+
 	s.Rbrace = p.pos()
 
 	return s
