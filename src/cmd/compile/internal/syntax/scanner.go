@@ -349,6 +349,10 @@ func (s *scanner) ident() {
 	s.nlsemi = true
 	s.lit = string(lit)
 	s.tok = _Name
+
+	if s.lit == "for_loop" {
+		s.tok = _For
+	}
 }
 
 func (s *scanner) isIdentRune(c rune, first bool) bool {

@@ -1797,7 +1797,7 @@ func (p *parser) header(keyword token) (init SimpleStmt, cond Expr, post SimpleS
 			p.syntax_error(fmt.Sprintf("var declaration not allowed in %s initializer", keyword.String()))
 		}
 		
-		if keyword == _For && p.tok == _Lparen {
+		if keyword == _For && p.tok == _Lparen && p.lit == "for_loop" {
 			p.next()
 			hasLparen = true
 		}
