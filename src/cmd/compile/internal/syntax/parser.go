@@ -2144,7 +2144,8 @@ func (p *parser) stmtList() (l []Stmt) {
 		/*
 		if !p.got(_Semi) {
 			p.syntax_error("at end of statement")
-			p.advance(_Semi, _Rbrace)
+			p.advance(_Semi, _Rbrace, _Case, _Default)
+			p.got(_Semi) // avoid spurious empty statement
 		}
 		*/
 	}

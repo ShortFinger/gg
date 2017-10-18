@@ -285,7 +285,7 @@ type Scanner interface {
 // Example usage:
 //
 //   var outArg string
-//   _, err := db.ExecContext(ctx, "ProcName", sql.Named("Arg1", Out{Dest: &outArg}))
+//   _, err := db.ExecContext(ctx, "ProcName", sql.Named("Arg1", sql.Out{Dest: &outArg}))
 type Out struct {
 	_Named_Fields_Required struct{}
 
@@ -2491,12 +2491,6 @@ func (rs *Rows) nextLocked() (doClose, ok bool) {
 	if rs.lastcols == nil {
 		rs.lastcols = make([]driver.Value, len(rs.rowsi.Columns()))
 	}
-
-	// Lock the driver connection before calling the driver interface
-	// rowsi to prevent a Tx from rolling back the connection at the same time.
-	rs.dc.Lock()
-	defer rs.dc.Unlock()
-
 	rs.lasterr = rs.rowsi.Next(rs.lastcols)
 	if rs.lasterr != nil {
 		// Close the connection if there is a driver error.
@@ -2546,12 +2540,6 @@ func (rs *Rows) NextResultSet() bool {
 		doClose = true
 		return false
 	}
-
-	// Lock the driver connection before calling the driver interface
-	// rowsi to prevent a Tx from rolling back the connection at the same time.
-	rs.dc.Lock()
-	defer rs.dc.Unlock()
-
 	rs.lasterr = nextResultSet.NextResultSet()
 	if rs.lasterr != nil {
 		doClose = true
