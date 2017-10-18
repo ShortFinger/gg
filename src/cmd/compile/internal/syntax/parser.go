@@ -1723,14 +1723,26 @@ func (p *parser) blockStmt(context string) *BlockStmt {
 	s.pos = p.pos()
 
 	if !p.got(_Lbrace) {
-		p.syntax_error("expecting { after " + context)
-		p.advance(_Name, _Rbrace)
-		// TODO(gri) may be better to return here than to continue (#19663)
+		return p.singleStmt()
 	}
 
 	s.List = p.stmtList()
 	s.Rbrace = p.pos()
 	p.want(_Rbrace)
+
+	return s
+}
+
+func (p *parser) singleStmt() *BlockStmt {
+	if trace {
+		defer p.trace("singleStmt")()
+	}
+
+	s := new(BlockStmt)
+	s.pos = p.pos()
+
+	s.List = p.stmtList()
+	s.Rbrace = p.pos()
 
 	return s
 }
@@ -1867,8 +1879,7 @@ func (p *parser) ifStmt() *IfStmt {
 		case _Lbrace:
 			s.Else = p.blockStmt("")
 		default:
-			p.syntax_error("else must be followed by if or statement block")
-			p.advance(_Name, _Rbrace)
+			s.Else = p.singleStmt()
 		}
 	}
 
