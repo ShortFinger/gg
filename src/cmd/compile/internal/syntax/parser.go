@@ -1746,6 +1746,8 @@ func (p *parser) singleStmt() *BlockStmt {
 
 	s.Rbrace = p.pos()
 
+	p.got(_Semi)
+
 	return s
 }
 
