@@ -381,6 +381,10 @@ func (p *parser) list(open, sep, close token, f func() bool) src.Pos {
 		// sep is optional before close
 		if !p.got(sep) {
 
+			if p.tok != close && p.lastTok == sep {
+				continue
+			}
+
 			if close != _Semi {
 				p.trySkipNewline()
 			}

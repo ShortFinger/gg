@@ -27,6 +27,7 @@ type scanner struct {
 	// current token, valid after calling next()
 	line, col uint
 	tok       token
+	lastTok   token
 	lit       string   // valid if tok is _Name, _Literal, or _Semi ("semicolon", "newline", or "EOF")
 	kind      LitKind  // valid if tok is _Literal
 	op        Operator // valid if tok is _Operator, _AssignOp, or _IncOp
@@ -55,6 +56,7 @@ func (s *scanner) init(src io.Reader, errh, pragh func(line, col uint, msg strin
 func (s *scanner) next() {
 	nlsemi := s.nlsemi
 	s.nlsemi = false
+	s.lastTok = s.tok
 
 redo:
 	// skip white space
