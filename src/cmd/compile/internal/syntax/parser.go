@@ -838,7 +838,13 @@ func (p *parser) pexpr(keep_parens bool) Expr {
 		defer p.trace("pexpr")()
 	}
 
+	savedTok := p.tok
+
 	x := p.operand(keep_parens)
+
+	if savedTok == _Name {
+		p.trySkipNewline()
+	}
 
 loop:
 	for {
