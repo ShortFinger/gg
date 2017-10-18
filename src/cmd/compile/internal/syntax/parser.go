@@ -337,10 +337,14 @@ func (p *parser) fileOrNil() *File {
 		// since comments before may set pragmas for the next function decl.
 		p.pragma = 0
 
+		p.got(_Semi)
+
+		/*
 		if p.tok != _EOF && !p.got(_Semi) {
 			p.syntax_error("after top level declaration")
 			p.advance(_Const, _Type, _Var, _Func)
 		}
+		*/
 	}
 	// p.tok == _EOF
 
