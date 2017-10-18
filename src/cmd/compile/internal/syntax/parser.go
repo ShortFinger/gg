@@ -1713,18 +1713,18 @@ func (p *parser) labeledStmtOrNil(label *Name) Stmt {
 
 // context must be a non-empty string unless we know that p.tok == _Lbrace.
 func (p *parser) blockStmt(context string) *BlockStmt {
-	if trace {
-		defer p.trace("blockStmt")()
-	}
-
 	p.trySkipNewline()
-
-	s := new(BlockStmt)
-	s.pos = p.pos()
 
 	if !p.got(_Lbrace) {
 		return p.singleStmt()
 	}
+
+	if trace {
+		defer p.trace("blockStmt")()
+	}
+
+	s := new(BlockStmt)
+	s.pos = p.pos()
 
 	s.List = p.stmtList()
 	s.Rbrace = p.pos()
@@ -1735,7 +1735,7 @@ func (p *parser) blockStmt(context string) *BlockStmt {
 
 func (p *parser) singleStmt() *BlockStmt {
 	if trace {
-		defer p.trace("singleStmt")()
+		defer p.trace("blockStmt")()
 	}
 
 	s := new(BlockStmt)
