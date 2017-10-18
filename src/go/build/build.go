@@ -738,7 +738,7 @@ Found:
 			continue
 		}
 		if !match {
-			if ext == ".go" {
+			if ext == ".go" || ext == ".gg" {
 				p.IgnoredGoFiles = append(p.IgnoredGoFiles, name)
 			}
 			continue
@@ -921,7 +921,7 @@ Found:
 func hasGoFiles(ctxt *Context, dir string) bool {
 	ents, _ := ctxt.readDir(dir)
 	for _, ent := range ents {
-		if !ent.IsDir() && strings.HasSuffix(ent.Name(), ".go") {
+		if !ent.IsDir() && (strings.HasSuffix(ent.Name(), ".go") || strings.HasSuffix(ent.Name(), ".gg")) {
 			return true
 		}
 	}
@@ -1075,7 +1075,7 @@ func (ctxt *Context) matchFile(dir, name string, allTags map[string]bool, binary
 	}
 
 	switch ext {
-	case ".go", ".c", ".cc", ".cxx", ".cpp", ".m", ".s", ".h", ".hh", ".hpp", ".hxx", ".f", ".F", ".f90", ".S", ".swig", ".swigcxx":
+	case ".go", ".gg", ".c", ".cc", ".cxx", ".cpp", ".m", ".s", ".h", ".hh", ".hpp", ".hxx", ".f", ".F", ".f90", ".S", ".swig", ".swigcxx":
 		// tentatively okay - read to make sure
 	case ".syso":
 		// binary, no reading
@@ -1092,7 +1092,7 @@ func (ctxt *Context) matchFile(dir, name string, allTags map[string]bool, binary
 		return
 	}
 
-	if strings.HasSuffix(filename, ".go") {
+	if strings.HasSuffix(filename, ".go") || strings.HasSuffix(filename, ".gg") {
 		data, err = readImports(f, false, nil)
 		if strings.HasSuffix(filename, "_test.go") {
 			binaryOnly = nil // ignore //go:binary-only-package comments in _test.go files
