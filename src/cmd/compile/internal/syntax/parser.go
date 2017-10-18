@@ -335,7 +335,7 @@ func (p *parser) fileOrNil() *File {
 
 		// Reset p.pragma BEFORE advancing to the next token (consuming ';')
 		// since comments before may set pragmas for the next function decl.
-		p.pragma = 0
+		//p.pragma = 0
 
 		p.got(_Semi)
 
@@ -486,6 +486,9 @@ func (p *parser) typeDecl(group *Group) Decl {
 	d := new(TypeDecl)
 	d.pos = p.pos()
 
+	d.Pragma = p.pragma
+	p.pragma = 0
+
 	d.Name = p.name()
 	d.Alias = p.got(_Assign)
 	d.Type = p.typeOrNil()
@@ -495,7 +498,6 @@ func (p *parser) typeDecl(group *Group) Decl {
 		p.advance(_Semi, _Rparen)
 	}
 	d.Group = group
-	d.Pragma = p.pragma
 
 	return d
 }
@@ -555,6 +557,9 @@ func (p *parser) funcDeclOrNil() *FuncDecl {
 		return nil
 	}
 
+	f.Pragma = p.pragma
+	p.pragma = 0
+
 	f.Name = p.name()
 	f.Type = p.funcType()
 
@@ -563,7 +568,6 @@ func (p *parser) funcDeclOrNil() *FuncDecl {
 	if p.tok == _Lbrace {
 		f.Body = p.funcBody()
 	}
-	f.Pragma = p.pragma
 
 	return f
 }
