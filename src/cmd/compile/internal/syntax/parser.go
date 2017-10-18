@@ -1789,11 +1789,19 @@ func (p *parser) header(keyword token) (init SimpleStmt, cond Expr, post SimpleS
 	outer := p.xnest
 	p.xnest = -1
 
+	var hasLparen bool = false
+
 	if p.tok != _Semi {
 		// accept potential varDecl but complain
 		if p.got(_Var) {
 			p.syntax_error(fmt.Sprintf("var declaration not allowed in %s initializer", keyword.String()))
 		}
+		
+		if keyword == _For && p.tok == _Lparen {
+			p.next()
+			hasLparen = true
+		}
+
 		init = p.simpleStmt(nil, keyword == _For)
 		// If we have a range clause, we are done (can only happen for keyword == _For).
 		if _, ok := init.(*RangeClause); ok {
@@ -1834,6 +1842,14 @@ func (p *parser) header(keyword token) (init SimpleStmt, cond Expr, post SimpleS
 	} else {
 		condStmt = init
 		init = nil
+	}
+
+	if keyword == _For && hasLparen {
+		if p.tok == _Rparen {
+			p.next()
+		} else {
+			p.syntax_error("expecting ) after condition")
+		}
 	}
 
 	p.trySkipNewline()
