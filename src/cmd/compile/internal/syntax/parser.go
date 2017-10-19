@@ -852,6 +852,11 @@ func (p *parser) pexpr(keep_parens bool) Expr {
 
 	x := p.operand(keep_parens)
 
+	switch x.(type) {
+	case *ArrayType, *SliceType, *StructType, *MapType:
+		p.trySkipNewline()
+	}
+
 loop:
 	for {
 		pos := p.pos()
