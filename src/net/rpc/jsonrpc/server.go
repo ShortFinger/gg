@@ -97,7 +97,7 @@ func (c *serverCodec) ReadRequestBody(x interface{}) error {
 	return json.Unmarshal(*c.req.Params, &params)
 }
 
-var null = json.RawMessage([]byte("null"))
+var null_v = json.RawMessage([]byte("null"))
 
 func (c *serverCodec) WriteResponse(r *rpc.Response, x interface{}) error {
 	c.mutex.Lock()
@@ -111,7 +111,7 @@ func (c *serverCodec) WriteResponse(r *rpc.Response, x interface{}) error {
 
 	if b == nil {
 		// Invalid request so no id. Use JSON null.
-		b = &null
+		b = &null_v
 	}
 	resp := serverResponse{Id: b}
 	if r.Error == "" {

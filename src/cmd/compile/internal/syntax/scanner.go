@@ -352,6 +352,8 @@ func (s *scanner) ident() {
 
 	if s.lit == "for_loop" {
 		s.tok = _For
+	} else if s.lit == "null" {
+		s.lit = "nil"
 	}
 }
 
